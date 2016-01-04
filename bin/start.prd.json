@@ -1,0 +1,9 @@
+{
+  "name": "node-vpcom",
+  "cwd": "/app/webdocs/node-vpcom",
+  "script": "babel.server.js",
+  "instances": 1,
+  "env": {
+    "NODE_ENV": "production",
+  }
+}
