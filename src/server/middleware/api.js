@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import httpProxy from 'http-proxy';
 import nodemailer from 'nodemailer';
+import smtpTransport from 'nodemailer-smtp-transport';
 
 export default function(app) {
   const router = express.Router();
@@ -15,32 +16,32 @@ export default function(app) {
   });
   router.use('/send', (req, res) => {
   	console.log(req.body);
-  	var transporter = nodemailer.createTransport({
-  		service: "Gmail",
-  		auth: {
-  			user: "kenpace1970@gmail.com",
-  			pass: "S3m1n0l3s"
-  		}
-  	});
-
+  	var transporter = nodemailer.createTransport(smtpTransport({
+      host: 'mailhost.valpak.com'
+    }));
+    var jobs = (req.body);
+    var selectedJobs = jobs.jobs.filter(function(job) {
+      return job.INSTANT_WIN == 'X';
+    }).
+    map(function(job) {
+      return job.JOB_NBR;
+    });
   	var mailOptions = {
-  		from: 'example@gmail.com', // sender email address
+  		from: 'requestor@coxtarget.com', // sender email address
   		to: 'ken_pace@valpak.com', // list of receivers
-  		subject: 'Hello', // subject line
-  		text: 'You have a new submission with the following details... Jobs: ' + req.body,
-  		html: '<p>You got a new submission with the following details...</p><ul><li>Jobs: ' + req.body + '</li></ul>'
+  		subject: 'Instant Win Registration', // subject line  		
+  		html: '<p>You got a new submission with the following details...</p><ul><li>Jobs: ' + JSON.stringify(selectedJobs) + '</li></ul>'
   	};
 
   	transporter.sendMail(mailOptions, function(error, info){
   		if(error){
   			console.log(error);
-  			res.redirect('/');
+  			res.sendStatus(500);
   		} else {
   			console.log('Message Sent: ' + info.response);
-  			res.redirect('/');
+  			res.sendStatus(200);
   		}
-  	})
-  	res.sendStatus(200);
+  	});
   })
   return router;
 }
