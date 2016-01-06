@@ -28,9 +28,9 @@ export default function(app) {
     });
   	var mailOptions = {
   		from: 'requestor@coxtarget.com', // sender email address
-  		to: 'ken_pace@valpak.com', // list of receivers
+  		to: 'ken_pace@valpak.com,jim_gaines@valpak.com', // list of receivers
   		subject: 'Instant Win Registration', // subject line  		
-  		html: '<p>You got a new submission with the following details...</p><ul><li>Jobs: ' + JSON.stringify(selectedJobs) + '</li></ul>'
+  		html: '<p>The following job(s) were selected for Instant Win...</p><ul><li>Jobs: ' + JSON.stringify(selectedJobs) + '</li></ul>'
   	};
 
   	transporter.sendMail(mailOptions, function(error, info){
@@ -40,6 +40,7 @@ export default function(app) {
   		} else {
   			console.log('Message Sent: ' + info.response);
   			res.sendStatus(200);
+        res.redirect('/');
   		}
   	});
   })
