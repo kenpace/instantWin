@@ -40,7 +40,7 @@ export default function(app) {
   		} else {
   			console.log('Message Sent: ' + info.response);
   			res.sendStatus(200);
-        res.redirect('/');
+        window.location.href = 'http://webdev:3000/'
   		}
   	});
   })
