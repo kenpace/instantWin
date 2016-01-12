@@ -1,32 +1,35 @@
 import React from 'react';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table'; // in ECMAScript 6
 
-
-
 class App extends React.Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
-    	jobs: []
+    	jobs: [],
+      selected: []
     }
   }
 
+  fetchJobs() {
+    const token = btoa(unescape(encodeURIComponent("JAVAWEBUSER:LAGN43PG")));
+    var franchise_id = 3131;  
+    fetch('http://localhost:3000/api/proxy?url=http://sapdev.valpak.com/sap/fmcall/Z_ONPAK_GET_JOBS_FOR_IW?format=json&FRANCHISE_ID=' + franchise_id, {
+      headers: {
+        Authorization: "Basic " + token
+      } 
+    }).then((res) => {
+      res.json().then((data) => {
+        this.setState({
+          jobs: data.CT_JOBS_FOR_IW
+        })
+      })
+    })  
+  }
+
   componentDidMount() {
-  	const token = btoa(unescape(encodeURIComponent("JAVAWEBUSER:LAGN43PG")));
-  	var franchise_id = 3131;  
-  	fetch('http://localhost:3000/api/proxy?url=http://sapdev.valpak.com/sap/fmcall/Z_ONPAK_GET_JOBS_FOR_IW?format=json&FRANCHISE_ID=' + franchise_id, {
-  		headers: {
-  			Authorization: "Basic " + token
-  		}	
-  	}).then((res) => {
-  		res.json().then((data) => {
-  			this.setState({
-  				jobs: data.CT_JOBS_FOR_IW
-  			})
-  		})
-  	})
+    this.fetchJobs();	
   }
 
   handleSubmit(e) {
@@ -40,6 +43,7 @@ class App extends React.Component {
       body: JSON.stringify({CT_JOBS_AND_IW:this.state.jobs})
 
     }).then((res) => {
+      this.fetchJobs();      
       res.json().then((data) => {
         console.log(data);
         fetch('http://localhost:3000/api/send',{
@@ -55,8 +59,7 @@ class App extends React.Component {
 
 
 
-  onRowSelect(row, isSelected){
-      console.log(row);
+  onRowSelect(row, isSelected){      
       var selectedRowIndex = this.state.jobs.findIndex(function(job, index){
         if(row.JOB_NBR === job.JOB_NBR) {
           return true;
@@ -80,7 +83,7 @@ class App extends React.Component {
   		clickToSelect: true,
   		bgColor: "rgb(180,250,180)",
   		onSelect: this.onRowSelect.bind(this),
-  		onSelectAl: this.onSelectAll.bind(this)
+  		onSelectAll: this.onSelectAll.bind(this)
   	};
 
     return (

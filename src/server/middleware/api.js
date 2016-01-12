@@ -14,7 +14,7 @@ export default function(app) {
   router.use('/proxy', (req, res) => { 
   	proxy.web(req, res, {target:req.query.url});
   });
-  router.use('/send', (req, res) => {
+  router.use('/send', (req, res, next) => {
   	console.log(req.body);
   	var transporter = nodemailer.createTransport(smtpTransport({
       host: 'mailhost.valpak.com'
@@ -39,8 +39,7 @@ export default function(app) {
   			res.sendStatus(500);
   		} else {
   			console.log('Message Sent: ' + info.response);
-  			res.sendStatus(200);
-        window.location.href = 'http://webdev:3000/'
+  			res.sendStatus(200);        
   		}
   	});
   })
